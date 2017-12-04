@@ -71,6 +71,8 @@ public class Scraper {
                     BigDecimal percentIncrease = Utils.calculatePercentIncrease(coin.getBuyPrice(), lastPrice);
                     int minutesAfterMaxWasReached = (int)Duration.between(LocalDateTime.now(), coin.getFirstTimeAppearing()).toMinutes();
                     db.updateCoin(coin.getId(), lastPrice, percentIncrease, minutesAfterMaxWasReached);
+                } else {
+                    db.updateCurrentPercentage(coin.getId(),Utils.calculatePercentIncrease(coin.getBuyPrice(), lastPrice));
                 }
 
             }

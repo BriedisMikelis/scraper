@@ -18,6 +18,7 @@ public class Coins {
     private BigDecimal maxPrice;
     private BigDecimal percentageGain;
     private int minutesAfterMaxWasReached;
+    private BigDecimal currentPercentage;
     private LocalDateTime lastTimeAppeared;
 
     public Integer getId() {
@@ -106,6 +107,14 @@ public class Coins {
 
     public void setMinutesAfterMaxWasReached(int minutesAfterMaxWasReached) {
         this.minutesAfterMaxWasReached = minutesAfterMaxWasReached;
+    }
+
+    public BigDecimal getCurrentPercentage() {
+        return currentPercentage;
+    }
+
+    public void setCurrentPercentage(BigDecimal currentPercentage) {
+        this.currentPercentage = currentPercentage;
     }
 
     public LocalDateTime getLastTimeAppeared() {
