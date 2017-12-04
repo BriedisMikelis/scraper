@@ -22,7 +22,7 @@ public class WebScraper {
 
     public WebScraper() {
         DesiredCapabilities DesireCaps = new DesiredCapabilities();
-        DesireCaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "C:/Users/Mikelis/PhantomJs/phantomjs-2.1.1-windows/bin/phantomjs.exe");
+        DesireCaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "C:/Users/mikelis.briedis/PhantomJs/phantomjs-2.1.1-windows/bin/phantomjs.exe");
         driver = new PhantomJSDriver(DesireCaps);
         driver.manage().window().setSize(new Dimension(1270, 768));
     }
@@ -34,7 +34,6 @@ public class WebScraper {
                 return d.findElement(By.className("item")).getText().length() != 0;
             }
         });
-        Utils.captureScreenshot(driver, "TestImage");
         List<WebElement> itemsFromCarousel = driver.findElements(By.className("item"));
         List<Coins> listOfTrendingCoins = itemsFromCarousel.stream().map(i -> {
             Coins trendingCoin = new Coins();
@@ -49,6 +48,10 @@ public class WebScraper {
             trendingCoin.setLastTimeAppeared(LocalDateTime.now());
             return trendingCoin;
         }).collect(Collectors.toList());
+
+        System.out.println("\nTrending coins:");
+        listOfTrendingCoins.forEach(coin-> System.out.println(coin.getName() +" : " + coin.getTitle()));
+        System.out.println("");
         return listOfTrendingCoins;
     }
 }

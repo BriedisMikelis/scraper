@@ -21,6 +21,7 @@ public class SqLiteDb {
     private static final String COLUMN_buyPrice = "buyPrice";
     private static final String COLUMN_maxPrice = "maxPrice";
     private static final String COLUMN_percentageGain = "percentageGain";
+    private static final String COLUMN_minutesAfterMaxReached = "minutesAfterMaxReached";
     private static final String COLUMN_lastTimeAppeared = "lastTimeAppeared";
 
     Connection conn = null;
@@ -31,14 +32,6 @@ public class SqLiteDb {
             System.out.println("Connection to SQLite has been established.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        }
-    }
-
-    public void executeInsertQuery(String query) {
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
@@ -53,8 +46,9 @@ public class SqLiteDb {
                 COLUMN_buyPrice,
                 COLUMN_maxPrice,
                 COLUMN_percentageGain,
+                COLUMN_minutesAfterMaxReached,
                 COLUMN_lastTimeAppeared) +
-                ") VALUES(?,?,?,?,?,?,?,?,?,?)";
+                ") VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 
         int numRowsInserted = 0;
         try (PreparedStatement pstmt = conn.prepareStatement(INSERT_SQL)) {
@@ -67,7 +61,8 @@ public class SqLiteDb {
             pstmt.setBigDecimal(7, coinData.getBuyPrice());
             pstmt.setBigDecimal(8, coinData.getMaxPrice());
             pstmt.setBigDecimal(9, coinData.getPercentageGain());
-            pstmt.setObject(10, coinData.getLastTimeAppeared());
+            pstmt.setInt(10, coinData.getMinutesAfterMaxWasReached());
+            pstmt.setObject(11, coinData.getLastTimeAppeared());
             numRowsInserted = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -96,6 +91,7 @@ public class SqLiteDb {
                 coin.setBuyPrice(rs.getBigDecimal(COLUMN_buyPrice));
                 coin.setMaxPrice(rs.getBigDecimal(COLUMN_maxPrice));
                 coin.setPercentageGain(rs.getBigDecimal(COLUMN_percentageGain));
+                coin.setMinutesAfterMaxWasReached(rs.getInt(COLUMN_minutesAfterMaxReached));
                 coin.setLastTimeAppeared(LocalDateTime.parse(rs.getString(COLUMN_lastTimeAppeared)));
                 resultList.add(coin);
             }
@@ -126,12 +122,16 @@ public class SqLiteDb {
         }
     }
 
-    public void updateAskPriceAndPercetage(Integer id, BigDecimal maxPrice, BigDecimal percentIncrease) {
-        String UPDATE_SQL = "UPDATE TrendingCoins SET maxPrice = ?, percentageGain = ? WHERE id = ?";
+    public void updateCoin(Integer id, BigDecimal maxPrice, BigDecimal percentIncrease, int minutesAfterMaxWasReached) {
+        String UPDATE_SQL = "UPDATE TrendingCoins " +
+                "SET "+COLUMN_maxPrice+" = ?" +
+                ", "+COLUMN_percentageGain+" = ?" +
+                ", "+COLUMN_minutesAfterMaxReached+" = ? WHERE id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
             pstmt.setBigDecimal(1, maxPrice);
             pstmt.setBigDecimal(2, percentIncrease);
-            pstmt.setInt(3, id);
+            pstmt.setInt(3, minutesAfterMaxWasReached);
+            pstmt.setInt(4, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
