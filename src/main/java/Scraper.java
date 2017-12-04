@@ -15,6 +15,7 @@ public class Scraper {
     RestClient restClient;
     WebScraper webScraper = new WebScraper();
     SqLiteDb db;
+
     public void run() {
         System.out.println("STARTING RUN -----------------------------------------");
         restClient = new RestClient();
@@ -66,13 +67,28 @@ public class Scraper {
         if (!listOfCoinsThatAppearedWithinTwoDays.isEmpty()) {
             System.out.println("Updating asked price and %");
             for (Coins coin : listOfCoinsThatAppearedWithinTwoDays) {
+                System.out.println("updatePrices 1");
                 BigDecimal lastPrice = restClient.getTicker(coin.getMarketName()).getResult().getLast();
+                System.out.println("updatePrices 2");
+                System.out.println(coin.getBuyPrice().toString() + " " + lastPrice);
+                BigDecimal percentIncrease = Utils.calculatePercentIncrease(coin.getBuyPrice(), lastPrice);
                 if (coin.getMaxPrice().compareTo(lastPrice) < 0) {
-                    BigDecimal percentIncrease = Utils.calculatePercentIncrease(coin.getBuyPrice(), lastPrice);
-                    int minutesAfterMaxWasReached = (int)Duration.between(LocalDateTime.now(), coin.getFirstTimeAppearing()).toMinutes();
+                    System.out.println("updatePrices 2.1");
+                    int minutesAfterMaxWasReached = (int) Duration.between(coin.getFirstTimeAppearing(), LocalDateTime.now()).toMinutes();
+                    System.out.println("updatePrices 3");
                     db.updateCoin(coin.getId(), lastPrice, percentIncrease, minutesAfterMaxWasReached);
+                    System.out.println("updatePrices 4");
                 } else {
-                    db.updateCurrentPercentage(coin.getId(),Utils.calculatePercentIncrease(coin.getBuyPrice(), lastPrice));
+                    System.out.println("updatePrices 2.2");
+                    if (coin.getMinutesMinus10PrcReached() == 0 && percentIncrease.compareTo(new BigDecimal(-10)) <= 0) {
+                        int minutesMinus10PercReached = (int) Duration.between(coin.getFirstTimeAppearing(), LocalDateTime.now()).toMinutes();
+                        System.out.println("updatePrices 5");
+                        db.updateMinutesMinus10PercReached(coin.getId(), minutesMinus10PercReached);
+                        System.out.println("updatePrices 6");
+                    }
+                    System.out.println("updatePrices 7");
+                    db.updateCurrentPercentage(coin.getId(), Utils.calculatePercentIncrease(coin.getBuyPrice(), lastPrice));
+                    System.out.println("updatePrices 8");
                 }
 
             }

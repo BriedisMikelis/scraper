@@ -1,11 +1,9 @@
 import Model.Coins;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -21,10 +19,13 @@ public class WebScraper {
     WebDriver driver;
 
     public WebScraper() {
-        DesiredCapabilities DesireCaps = new DesiredCapabilities();
-        DesireCaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "C:/Users/mikelis.briedis/PhantomJs/phantomjs-2.1.1-windows/bin/phantomjs.exe");
-        driver = new PhantomJSDriver(DesireCaps);
-        driver.manage().window().setSize(new Dimension(1270, 768));
+//        System.setProperty("webdriver.chrome.driver",
+//                "chromedriver.exe");
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        options.addArguments("--disable-gpu");
+        options.addArguments("window-size=1200x600");
+        driver = new ChromeDriver(options);
     }
 
     public List<Coins> scrapeBittrexFrontpage() {
@@ -50,7 +51,7 @@ public class WebScraper {
         }).collect(Collectors.toList());
 
         System.out.println("\nTrending coins:");
-        listOfTrendingCoins.forEach(coin-> System.out.println(coin.getName() +" : " + coin.getTitle()));
+        listOfTrendingCoins.forEach(coin -> System.out.println(coin.getName() + " : " + coin.getTitle()));
         System.out.println("");
         return listOfTrendingCoins;
     }
