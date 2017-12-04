@@ -12,6 +12,6 @@ public class Application {
         Runnable scraperRunnable = () -> scraper.run();
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(scraperRunnable, 0, 3, TimeUnit.MINUTES);
+        executor.scheduleAtFixedRate(scraperRunnable, 0, 1, TimeUnit.MINUTES);
     }
 }
