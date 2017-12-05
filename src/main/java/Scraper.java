@@ -1,12 +1,12 @@
-import Model.Coins;
-import Rest.RestClient;
-
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import Model.Coins;
+import Rest.RestClient;
 
 /**
  * Created by Mikelis on 2017.12.04..

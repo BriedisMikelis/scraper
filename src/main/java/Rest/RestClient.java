@@ -1,14 +1,12 @@
 package Rest;
 
-import Rest.model.MarketTicker;
-import org.glassfish.jersey.client.ClientProperties;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+
+import Rest.model.MarketTicker;
 
 /**
  * Created by Mikelis on 2017.12.03..
@@ -21,7 +19,7 @@ public class RestClient {
     WebTarget tickerWebTarget = bittrexWebTarget.path("getticker");
 
     public MarketTicker getTicker(String market) {
-        System.out.println("getTicker("+market+")");
+        System.out.println("getTicker(" + market + ")");
         WebTarget target = tickerWebTarget.queryParam("market", market);
         System.out.println("1");
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);

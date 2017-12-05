@@ -1,16 +1,16 @@
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import Model.Coins;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Mikelis on 2017.12.03..
@@ -29,14 +29,12 @@ public class WebScraper {
     }
 
     public List<Coins> scrapeBittrexFrontpage() {
-        System.out.println("scrape bittrex frontpage");
+        System.out.println("Get bittrex frontpage : Driver to string " + driver.toString());
         driver.get("https://bittrex.com/Home/Markets");
-        (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver d) {
-                return d.findElement(By.className("item")).getText().length() != 0;
-            }
-        });
-        List<WebElement> itemsFromCarousel = driver.findElements(By.className("item"));
+        System.out.println("Getting items from carousell");
+//        http://docs.seleniumhq.org/docs/04_webdriver_advanced.jsp#explicit-and-implicit-waits
+        List<WebElement> itemsFromCarousel = (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("item")));
         List<Coins> listOfTrendingCoins = itemsFromCarousel.stream().map(i -> {
             Coins trendingCoin = new Coins();
             String changeString = i.findElement(By.className("changed")).getText();

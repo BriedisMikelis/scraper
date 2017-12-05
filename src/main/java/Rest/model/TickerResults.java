@@ -1,8 +1,8 @@
 package Rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by Mikelis on 2017.12.03..

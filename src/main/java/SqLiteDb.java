@@ -1,11 +1,15 @@
-import Model.Coins;
-import org.apache.commons.dbutils.DbUtils;
-
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import Model.Coins;
+import org.apache.commons.dbutils.DbUtils;
 
 /**
  * Created by Mikelis on 2017.12.02..
@@ -111,8 +115,8 @@ public class SqLiteDb {
 
     public void updateLastTimeSeen(Integer id) {
         String UPDATE_SQL = "UPDATE TrendingCoins " +
-                "SET "+COLUMN_lastTimeAppeared+" = strftime('%Y-%m-%dT%H:%M:%f','now', '+2 hour') " +
-                "WHERE "+COLUMN_id+" = ?";
+                "SET " + COLUMN_lastTimeAppeared + " = strftime('%Y-%m-%dT%H:%M:%f','now', '+2 hour') " +
+                "WHERE " + COLUMN_id + " = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
@@ -123,11 +127,11 @@ public class SqLiteDb {
 
     public void updateCoin(Integer id, BigDecimal maxPrice, BigDecimal percentIncrease, int minutesAfterMaxWasReached) {
         String UPDATE_SQL = "UPDATE TrendingCoins " +
-                "SET "+COLUMN_maxPrice+" = ?" +
-                ", "+ COLUMN_maxPrctGain +" = ?" +
-                ", "+COLUMN_minutesAfterMaxReached+" = ? " +
-                ", "+COLUMN_currentPercentage+" = ? " +
-                "WHERE "+COLUMN_id+" = ?";
+                "SET " + COLUMN_maxPrice + " = ?" +
+                ", " + COLUMN_maxPrctGain + " = ?" +
+                ", " + COLUMN_minutesAfterMaxReached + " = ? " +
+                ", " + COLUMN_currentPercentage + " = ? " +
+                "WHERE " + COLUMN_id + " = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
             pstmt.setBigDecimal(1, maxPrice);
             pstmt.setBigDecimal(2, percentIncrease);
@@ -142,8 +146,8 @@ public class SqLiteDb {
 
     public void updateCurrentPercentage(Integer id, BigDecimal currentPercentage) {
         String UPDATE_SQL = "UPDATE TrendingCoins " +
-                "SET "+COLUMN_currentPercentage+" = ?" +
-                "WHERE "+COLUMN_id+" = ?";
+                "SET " + COLUMN_currentPercentage + " = ?" +
+                "WHERE " + COLUMN_id + " = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
             pstmt.setBigDecimal(1, currentPercentage);
             pstmt.setInt(2, id);
@@ -155,8 +159,8 @@ public class SqLiteDb {
 
     public void updateMinutesMinus10PercReached(Integer id, int minutesMinus10PercReached) {
         String UPDATE_SQL = "UPDATE TrendingCoins " +
-                "SET "+COLUMN_minutesMinus10PrcReached+" = ?" +
-                "WHERE "+COLUMN_id+" = ?";
+                "SET " + COLUMN_minutesMinus10PrcReached + " = ?" +
+                "WHERE " + COLUMN_id + " = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
             pstmt.setInt(1, minutesMinus10PercReached);
             pstmt.setInt(2, id);
