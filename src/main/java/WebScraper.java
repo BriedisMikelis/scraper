@@ -20,8 +20,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class WebScraper {
     WebDriver driver;
 
-    public WebScraper() {
+    public WebScraper(boolean isLinux) {
         ChromeOptions options = new ChromeOptions();
+        if (isLinux)options.setBinary("/usr/bin/chromium-browser");
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("window-size=1200x600");

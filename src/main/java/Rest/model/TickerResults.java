@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TickerResults {
     private BigDecimal bid;
     private BigDecimal ask;
-    private BigDecimal Last;
+    private BigDecimal last;
 
     @JsonProperty("Bid")
     public BigDecimal getBid() {
@@ -32,10 +32,10 @@ public class TickerResults {
 
     @JsonProperty("Last")
     public BigDecimal getLast() {
-        return Last;
+        return last;
     }
 
     public void setLast(BigDecimal last) {
-        Last = last;
+        this.last = last;
     }
 }

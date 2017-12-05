@@ -8,7 +8,11 @@ import java.util.concurrent.TimeUnit;
 public class Application {
 
     public static void main(String[] args) {
-        Scraper scraper = new Scraper();
+        Scraper scraper;
+        if (args.length==1 && args[0].equals("linux")){
+            scraper = new Scraper(true);
+        } else
+            scraper = new Scraper(false);
         Runnable scraperRunnable = () -> scraper.run();
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);

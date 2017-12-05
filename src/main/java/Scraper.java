@@ -16,8 +16,12 @@ import org.openqa.selenium.interactions.SourceType;
  */
 public class Scraper {
     RestClient restClient;
-    WebScraper webScraper = new WebScraper();
+    WebScraper webScraper;
     SqLiteDb db;
+
+    public Scraper(boolean isLinux) {
+        webScraper = new WebScraper(isLinux);
+    }
 
     public void run() {
         System.out.println("STARTING RUN -----------------------------------------");
