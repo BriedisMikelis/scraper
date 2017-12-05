@@ -1,10 +1,12 @@
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import Model.Coins;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -19,8 +21,6 @@ public class WebScraper {
     WebDriver driver;
 
     public WebScraper() {
-//        System.setProperty("webdriver.chrome.driver",
-//                "chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
@@ -30,11 +30,25 @@ public class WebScraper {
 
     public List<Coins> scrapeBittrexFrontpage() {
         System.out.println("Get bittrex frontpage : Driver to string " + driver.toString());
-        driver.get("https://bittrex.com/Home/Markets");
-        System.out.println("Getting items from carousell");
+        List<WebElement> itemsFromCarousel = new ArrayList<>();
+        //timeout exceptin handling retrying 3 times
+        int count = 0;
+        int maxTries = 3;
+        while (true) {
+            try {
+                driver.get("https://bittrex.com/Home/Markets");
+                System.out.println("Getting items from carousell : title of the page" + driver.getTitle());
 //        http://docs.seleniumhq.org/docs/04_webdriver_advanced.jsp#explicit-and-implicit-waits
-        List<WebElement> itemsFromCarousel = (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("item")));
+                itemsFromCarousel = (new WebDriverWait(driver, 15))
+                        .until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("item")));
+                break;
+            } catch (TimeoutException e) {
+                System.out.println("a timeout exception for bittrex trendig page scrape");
+                if (++count == maxTries) throw e;
+            }
+        }
+
+        System.out.println("Mapping items to object");
         List<Coins> listOfTrendingCoins = itemsFromCarousel.stream().map(i -> {
             Coins trendingCoin = new Coins();
             String changeString = i.findElement(By.className("changed")).getText();
@@ -50,7 +64,7 @@ public class WebScraper {
         }).collect(Collectors.toList());
 
         System.out.println("\nTrending coins:");
-        listOfTrendingCoins.forEach(coin -> System.out.println(coin.getName() + " : " + coin.getTitle()));
+        listOfTrendingCoins.forEach(coin -> System.out.println(coin.getName() + " : " + coin.getTitle() + " : " + coin.getPercentChange()));
         System.out.println("");
         return listOfTrendingCoins;
     }

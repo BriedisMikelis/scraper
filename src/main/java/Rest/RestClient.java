@@ -24,7 +24,13 @@ public class RestClient {
         System.out.println("1");
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
         System.out.println("2");
-        MarketTicker ticker = invocationBuilder.get(MarketTicker.class);
+        MarketTicker ticker = null;
+        try {
+            ticker = invocationBuilder.get(MarketTicker.class);
+        } catch (Exception e ){
+            System.out.println("a fucking exceptin");
+            System.out.println(e.toString());
+        }
         System.out.println("3");
         return ticker;
     }

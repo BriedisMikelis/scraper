@@ -7,6 +7,9 @@ import java.util.Optional;
 
 import Model.Coins;
 import Rest.RestClient;
+import Rest.model.MarketTicker;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.interactions.SourceType;
 
 /**
  * Created by Mikelis on 2017.12.04..
@@ -21,7 +24,13 @@ public class Scraper {
         restClient = new RestClient();
         db = new SqLiteDb();
 
-        List<Coins> listOfTrendingCoins = webScraper.scrapeBittrexFrontpage();
+        List<Coins> listOfTrendingCoins;
+        try {
+            listOfTrendingCoins = webScraper.scrapeBittrexFrontpage();
+        }catch (TimeoutException e){
+            System.out.println("A timeout exception happened in scrape scrapeBittrexFrontpage() stoping execution of loop");
+            return;
+        }
 //        webScraper.driver.quit();
 
         List<Coins> listOfCoinsThatAppearedWithinTwoDays = db.getCoinsThatApearedWithinTwoDays();
@@ -55,7 +64,12 @@ public class Scraper {
         if (!newCoinsToAdd.isEmpty()) {
             System.out.println("Adding new coins");
             for (Coins coin : newCoinsToAdd) {
-                BigDecimal askPrice = restClient.getTicker(coin.getMarketName()).getResult().getAsk();
+                MarketTicker marketTicker = restClient.getTicker(coin.getMarketName());
+                if (marketTicker.getResult() == null ){
+                    System.out.println("Coin " + coin.getMarketName() +"was not added duet to ticker results not present");
+                    continue;
+                }
+                BigDecimal askPrice = marketTicker.getResult().getAsk();
                 coin.setBuyPrice(askPrice);
                 coin.setMaxPrice(askPrice);
                 db.insertCoin(coin);
