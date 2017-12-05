@@ -29,6 +29,7 @@ public class WebScraper {
     }
 
     public List<Coins> scrapeBittrexFrontpage() {
+        System.out.println("scrape bittrex frontpage");
         driver.get("https://bittrex.com/Home/Markets");
         (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver d) {
