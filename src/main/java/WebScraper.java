@@ -22,7 +22,7 @@ public class WebScraper {
 
     public WebScraper(boolean isLinux) {
         ChromeOptions options = new ChromeOptions();
-        if (isLinux)options.setBinary("/usr/bin/chromium-browser");
+        if (isLinux) options.setBinary("/usr/bin/chromium-browser");
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("window-size=1200x600");
@@ -30,16 +30,14 @@ public class WebScraper {
     }
 
     public List<Coins> scrapeBittrexFrontpage() {
-        System.out.println("Get bittrex frontpage : Driver to string " + driver.toString());
-        List<WebElement> itemsFromCarousel = new ArrayList<>();
-        //timeout exceptin handling retrying 3 times
+        List<WebElement> itemsFromCarousel;
         int count = 0;
         int maxTries = 3;
         while (true) {
             try {
                 driver.get("https://bittrex.com/Home/Markets");
-                System.out.println("Getting items from carousell : title of the page" + driver.getTitle());
-//        http://docs.seleniumhq.org/docs/04_webdriver_advanced.jsp#explicit-and-implicit-waits
+                System.out.println("Getting items from carousell");
+//              http://docs.seleniumhq.org/docs/04_webdriver_advanced.jsp#explicit-and-implicit-waits
                 itemsFromCarousel = (new WebDriverWait(driver, 15))
                         .until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("item")));
                 break;

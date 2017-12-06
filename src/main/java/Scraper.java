@@ -23,14 +23,14 @@ public class Scraper {
     }
 
     public void run() {
-        System.out.println("STARTING RUN -----------------------------------------");
+        System.out.println("STARTING RUN");
         restClient = new RestClient();
         db = new SqLiteDb();
 
         List<Coins> listOfTrendingCoins;
         try {
             listOfTrendingCoins = webScraper.scrapeBittrexFrontpage();
-        }catch (TimeoutException e){
+        } catch (TimeoutException e) {
             System.out.println("A timeout exception happened in scrape scrapeBittrexFrontpage() stoping execution of loop");
             return;
         }
@@ -53,7 +53,7 @@ public class Scraper {
         updateLastTimeSeen(coinsToUpdateForLastTimeSeen);
         updatePrices(listOfCoinsThatAppearedWithinTwoDays);
         db.closeConnection();
-        System.out.println("done");
+        System.out.println("DONE\n");
     }
 
     private void updateLastTimeSeen(List<Coins> coinsToUpdateForLastTimeSeen) {
@@ -67,9 +67,15 @@ public class Scraper {
         if (!newCoinsToAdd.isEmpty()) {
             System.out.println("Adding new coins");
             for (Coins coin : newCoinsToAdd) {
-                MarketTicker marketTicker = restClient.getTicker(coin.getMarketName());
-                if (marketTicker.getResult() == null ){
-                    System.out.println("Coin " + coin.getMarketName() +"was not added duet to ticker results not present");
+                MarketTicker marketTicker;
+                try {
+                    marketTicker = restClient.getTicker(coin.getMarketName());
+                } catch (Exception e) {
+                    System.out.println("Exception in getTicker(), skipping adding new coin" + coin.getMarketName());
+                    continue;
+                }
+                if (marketTicker.getResult() == null || marketTicker.getResult().getAsk() == null) {
+                    System.out.println("Coin " + coin.getMarketName() + "was not added duet to ticker results or ask price not present. Skipping adding new coin" + coin.getMarketName());
                     continue;
                 }
                 BigDecimal askPrice = marketTicker.getResult().getAsk();
@@ -82,16 +88,22 @@ public class Scraper {
 
     private void updatePrices(List<Coins> listOfCoinsThatAppearedWithinTwoDays) {
         if (!listOfCoinsThatAppearedWithinTwoDays.isEmpty()) {
-            System.out.println("Updating asked price and %");
+            System.out.println("Updating coins");
             for (Coins coin : listOfCoinsThatAppearedWithinTwoDays) {
-                BigDecimal lastPrice = restClient.getTicker(coin.getMarketName()).getResult().getLast();
+                BigDecimal lastPrice;
+                try {
+                    lastPrice = restClient.getTicker(coin.getMarketName()).getResult().getLast();
+                } catch (Exception e) {
+                    System.out.println("Exception in getTicker(), skipping updating coin" + coin.getMarketName());
+                    continue;
+                }
 
                 BigDecimal percentChange = Utils.calculatePercentChange(coin.getBuyPrice(), lastPrice);
                 if (coin.getMaxPrice().compareTo(lastPrice) < 0) {
-                    if(coin.getMinutesToPositive5Prct() == 0 && percentChange.compareTo(new BigDecimal(5)) >= 0){
+                    if (coin.getMinutesToPositive5Prct() == 0 && percentChange.compareTo(new BigDecimal(5)) >= 0) {
                         db.updateMinutesToPositive5Prct(coin.getId(), calculateMinutesPassed(coin.getFirstTimeAppearing()));
                     }
-                    if(coin.getMinutesToPositive10Prct() == 0 && percentChange.compareTo(new BigDecimal(10)) >= 0){
+                    if (coin.getMinutesToPositive10Prct() == 0 && percentChange.compareTo(new BigDecimal(10)) >= 0) {
                         db.updateMinutesToPositive10Prct(coin.getId(), calculateMinutesPassed(coin.getFirstTimeAppearing()));
                     }
                     db.updateCoin(coin.getId(), lastPrice, percentChange, calculateMinutesPassed(coin.getFirstTimeAppearing()));
