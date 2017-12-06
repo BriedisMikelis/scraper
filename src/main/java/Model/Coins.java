@@ -17,8 +17,11 @@ public class Coins {
     private BigDecimal buyPrice;
     private BigDecimal maxPrice;
     private BigDecimal maxPrctGain;
-    private int minutesAfterMaxWasReached;
-    private int minutesMinus10PrcReached;
+    private int minutesToMaxPrct;
+    private int minutesToPositive5Prct;
+    private int minutesToPositive10Prct;
+    private int minutesToNegative5Prct;
+    private int minutesToNegative10Prct;
     private BigDecimal currentPercentage;
     private LocalDateTime lastTimeAppeared;
 
@@ -102,20 +105,44 @@ public class Coins {
         this.maxPrctGain = maxPrctGain;
     }
 
-    public int getMinutesAfterMaxWasReached() {
-        return minutesAfterMaxWasReached;
+    public int getMinutesToMaxPrct() {
+        return minutesToMaxPrct;
     }
 
-    public void setMinutesAfterMaxWasReached(int minutesAfterMaxWasReached) {
-        this.minutesAfterMaxWasReached = minutesAfterMaxWasReached;
+    public void setMinutesToMaxPrct(int minutesToMaxPrct) {
+        this.minutesToMaxPrct = minutesToMaxPrct;
     }
 
-    public int getMinutesMinus10PrcReached() {
-        return minutesMinus10PrcReached;
+    public int getMinutesToPositive5Prct() {
+        return minutesToPositive5Prct;
     }
 
-    public void setMinutesMinus10PrcReached(int minutesMinus10PrcReached) {
-        this.minutesMinus10PrcReached = minutesMinus10PrcReached;
+    public void setMinutesToPositive5Prct(int minutesToPositive5Prct) {
+        this.minutesToPositive5Prct = minutesToPositive5Prct;
+    }
+
+    public int getMinutesToPositive10Prct() {
+        return minutesToPositive10Prct;
+    }
+
+    public void setMinutesToPositive10Prct(int minutesToPositive10Prct) {
+        this.minutesToPositive10Prct = minutesToPositive10Prct;
+    }
+
+    public int getMinutesToNegative5Prct() {
+        return minutesToNegative5Prct;
+    }
+
+    public void setMinutesToNegative5Prct(int minutesToNegative5Prct) {
+        this.minutesToNegative5Prct = minutesToNegative5Prct;
+    }
+
+    public int getMinutesToNegative10Prct() {
+        return minutesToNegative10Prct;
+    }
+
+    public void setMinutesToNegative10Prct(int minutesToNegative10Prct) {
+        this.minutesToNegative10Prct = minutesToNegative10Prct;
     }
 
     public BigDecimal getCurrentPercentage() {

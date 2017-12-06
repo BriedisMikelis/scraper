@@ -9,7 +9,6 @@ import Model.Coins;
 import Rest.RestClient;
 import Rest.model.MarketTicker;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.interactions.SourceType;
 
 /**
  * Created by Mikelis on 2017.12.04..
@@ -85,31 +84,32 @@ public class Scraper {
         if (!listOfCoinsThatAppearedWithinTwoDays.isEmpty()) {
             System.out.println("Updating asked price and %");
             for (Coins coin : listOfCoinsThatAppearedWithinTwoDays) {
-                System.out.println("updatePrices 1");
                 BigDecimal lastPrice = restClient.getTicker(coin.getMarketName()).getResult().getLast();
-                System.out.println("updatePrices 2");
-                System.out.println(coin.getBuyPrice().toString() + " " + lastPrice);
-                BigDecimal percentIncrease = Utils.calculatePercentIncrease(coin.getBuyPrice(), lastPrice);
+
+                BigDecimal percentChange = Utils.calculatePercentChange(coin.getBuyPrice(), lastPrice);
                 if (coin.getMaxPrice().compareTo(lastPrice) < 0) {
-                    System.out.println("updatePrices 2.1");
-                    int minutesAfterMaxWasReached = (int) Duration.between(coin.getFirstTimeAppearing(), LocalDateTime.now()).toMinutes();
-                    System.out.println("updatePrices 3");
-                    db.updateCoin(coin.getId(), lastPrice, percentIncrease, minutesAfterMaxWasReached);
-                    System.out.println("updatePrices 4");
-                } else {
-                    System.out.println("updatePrices 2.2");
-                    if (coin.getMinutesMinus10PrcReached() == 0 && percentIncrease.compareTo(new BigDecimal(-10)) <= 0) {
-                        int minutesMinus10PercReached = (int) Duration.between(coin.getFirstTimeAppearing(), LocalDateTime.now()).toMinutes();
-                        System.out.println("updatePrices 5");
-                        db.updateMinutesMinus10PercReached(coin.getId(), minutesMinus10PercReached);
-                        System.out.println("updatePrices 6");
+                    if(coin.getMinutesToPositive5Prct() == 0 && percentChange.compareTo(new BigDecimal(5)) >= 0){
+                        db.updateMinutesToPositive5Prct(coin.getId(), calculateMinutesPassed(coin.getFirstTimeAppearing()));
                     }
-                    System.out.println("updatePrices 7");
-                    db.updateCurrentPercentage(coin.getId(), Utils.calculatePercentIncrease(coin.getBuyPrice(), lastPrice));
-                    System.out.println("updatePrices 8");
+                    if(coin.getMinutesToPositive10Prct() == 0 && percentChange.compareTo(new BigDecimal(10)) >= 0){
+                        db.updateMinutesToPositive10Prct(coin.getId(), calculateMinutesPassed(coin.getFirstTimeAppearing()));
+                    }
+                    db.updateCoin(coin.getId(), lastPrice, percentChange, calculateMinutesPassed(coin.getFirstTimeAppearing()));
+                } else {
+                    if (coin.getMinutesToNegative5Prct() == 0 && percentChange.compareTo(new BigDecimal(-5)) <= 0) {
+                        db.updateMinutesToNegative5Prct(coin.getId(), calculateMinutesPassed(coin.getFirstTimeAppearing()));
+                    }
+                    if (coin.getMinutesToNegative10Prct() == 0 && percentChange.compareTo(new BigDecimal(-10)) <= 0) {
+                        db.updateMinutesToNegative10Perc(coin.getId(), calculateMinutesPassed(coin.getFirstTimeAppearing()));
+                    }
+                    db.updateCurrentPercentage(coin.getId(), percentChange);
                 }
 
             }
         }
+    }
+
+    private int calculateMinutesPassed(LocalDateTime firstTimeAppearing) {
+        return (int) Duration.between(firstTimeAppearing, LocalDateTime.now()).toMinutes();
     }
 }

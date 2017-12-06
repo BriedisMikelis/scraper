@@ -25,8 +25,11 @@ public class SqLiteDb {
     private static final String COLUMN_buyPrice = "buyPrice";
     private static final String COLUMN_maxPrice = "maxPrice";
     private static final String COLUMN_maxPrctGain = "maxPrctGain";
-    private static final String COLUMN_minutesAfterMaxReached = "minutesAfterMaxReached";
-    private static final String COLUMN_minutesMinus10PrcReached = "minutesMinus10PrcReached";
+    private static final String COLUMN_minutestToMaxPrct = "minutestToMaxPrct";
+    private static final String COLUMN_pos5Prct = "pos5Prct";
+    private static final String COLUMN_pos10Prct = "pos10Prct";
+    private static final String COLUMN_neg5Prct = "neg5Prct";
+    private static final String COLUMN_neg10Prct = "neg10Prct";
     private static final String COLUMN_currentPercentage = "currentPercentage";
     private static final String COLUMN_lastTimeAppeared = "lastTimeAppeared";
 
@@ -92,8 +95,11 @@ public class SqLiteDb {
                 coin.setBuyPrice(rs.getBigDecimal(COLUMN_buyPrice));
                 coin.setMaxPrice(rs.getBigDecimal(COLUMN_maxPrice));
                 coin.setMaxPrctGain(rs.getBigDecimal(COLUMN_maxPrctGain));
-                coin.setMinutesAfterMaxWasReached(rs.getInt(COLUMN_minutesAfterMaxReached));
-                coin.setMinutesMinus10PrcReached(rs.getInt(COLUMN_minutesMinus10PrcReached));
+                coin.setMinutesToMaxPrct(rs.getInt(COLUMN_minutestToMaxPrct));
+                coin.setMinutesToPositive5Prct(rs.getInt(COLUMN_pos5Prct));
+                coin.setMinutesToPositive10Prct(rs.getInt(COLUMN_pos10Prct));
+                coin.setMinutesToNegative5Prct(rs.getInt(COLUMN_neg5Prct));
+                coin.setMinutesToNegative10Prct(rs.getInt(COLUMN_neg10Prct));
                 coin.setCurrentPercentage(rs.getBigDecimal(COLUMN_currentPercentage));
                 coin.setLastTimeAppeared(LocalDateTime.parse(rs.getString(COLUMN_lastTimeAppeared)));
                 resultList.add(coin);
@@ -129,7 +135,7 @@ public class SqLiteDb {
         String UPDATE_SQL = "UPDATE TrendingCoins " +
                 "SET " + COLUMN_maxPrice + " = ?" +
                 ", " + COLUMN_maxPrctGain + " = ?" +
-                ", " + COLUMN_minutesAfterMaxReached + " = ? " +
+                ", " + COLUMN_minutestToMaxPrct + " = ? " +
                 ", " + COLUMN_currentPercentage + " = ? " +
                 "WHERE " + COLUMN_id + " = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
@@ -156,13 +162,50 @@ public class SqLiteDb {
             e.printStackTrace();
         }
     }
-
-    public void updateMinutesMinus10PercReached(Integer id, int minutesMinus10PercReached) {
+    public void updateMinutesToPositive5Prct(Integer id, int minutesToPositive5Prct) {
         String UPDATE_SQL = "UPDATE TrendingCoins " +
-                "SET " + COLUMN_minutesMinus10PrcReached + " = ?" +
+                "SET " + COLUMN_pos5Prct + " = ?" +
                 "WHERE " + COLUMN_id + " = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
-            pstmt.setInt(1, minutesMinus10PercReached);
+            pstmt.setInt(1, minutesToPositive5Prct);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void updateMinutesToPositive10Prct(Integer id, int minutesToPositive10Prct) {
+        String UPDATE_SQL = "UPDATE TrendingCoins " +
+                "SET " + COLUMN_pos10Prct + " = ?" +
+                "WHERE " + COLUMN_id + " = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
+            pstmt.setInt(1, minutesToPositive10Prct);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateMinutesToNegative5Prct(Integer id, int minutesToNegative5Prct) {
+        String UPDATE_SQL = "UPDATE TrendingCoins " +
+                "SET " + COLUMN_neg5Prct + " = ?" +
+                "WHERE " + COLUMN_id + " = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
+            pstmt.setInt(1, minutesToNegative5Prct);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateMinutesToNegative10Perc(Integer id, int minutesToNegative10Perc) {
+        String UPDATE_SQL = "UPDATE TrendingCoins " +
+                "SET " + COLUMN_neg10Prct + " = ?" +
+                "WHERE " + COLUMN_id + " = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
+            pstmt.setInt(1, minutesToNegative10Perc);
             pstmt.setInt(2, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
