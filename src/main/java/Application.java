@@ -9,7 +9,7 @@ public class Application {
 
     public static void main(String[] args) {
         Scraper scraper;
-        if (args.length==1 && args[0].equals("linux")){
+        if (args.length == 1 && args[0].equals("linux")) {
             scraper = new Scraper(true);
         } else
             scraper = new Scraper(false);

@@ -75,9 +75,10 @@ public class SqLiteDb {
         return numRowsInserted;
     }
 
-    public List<Coins> getCoinsThatApearedWithinTwoDays() {
+    public List<Coins> getCoinsThatAreStillActive() {
+//       +2hours for timezone!!!!! strftime('%Y-%m-%dT%H:%M:%f','now','+2 hour')
         String sql = "SELECT * FROM TrendingCoins " +
-                "WHERE " + COLUMN_lastTimeAppeared + " > strftime('%Y-%m-%dT%H:%M:%f','now', '-1 day', '+2 hour')";
+                "WHERE " + COLUMN_lastTimeAppeared + " > strftime('%Y-%m-%dT%H:%M:%f','now', '-10 hour')";
         List<Coins> resultList = new ArrayList<>();
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 

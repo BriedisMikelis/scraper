@@ -36,12 +36,12 @@ public class Scraper {
         }
 //        webScraper.driver.quit();
 
-        List<Coins> listOfCoinsThatAppearedWithinTwoDays = db.getCoinsThatApearedWithinTwoDays();
+        List<Coins> coinsThatAreStillActive = db.getCoinsThatAreStillActive();
 
         List<Coins> newCoinsToAdd = new ArrayList<>();
         List<Coins> coinsToUpdateForLastTimeSeen = new ArrayList<>();
         listOfTrendingCoins.stream().forEach(trendingCoin -> {
-            Optional<Coins> result = listOfCoinsThatAppearedWithinTwoDays.stream().filter(o -> o.equals(trendingCoin)).findFirst();
+            Optional<Coins> result = coinsThatAreStillActive.stream().filter(o -> o.equals(trendingCoin)).findFirst();
             if (result.isPresent()) {
                 coinsToUpdateForLastTimeSeen.add(result.get());
             } else {
@@ -51,7 +51,7 @@ public class Scraper {
 
         addNewCoins(newCoinsToAdd);
         updateLastTimeSeen(coinsToUpdateForLastTimeSeen);
-        updatePrices(listOfCoinsThatAppearedWithinTwoDays);
+        updatePrices(coinsThatAreStillActive);
         db.closeConnection();
         System.out.println("DONE\n");
     }
@@ -70,6 +70,7 @@ public class Scraper {
                 MarketTicker marketTicker;
                 try {
                     marketTicker = restClient.getTicker(coin.getMarketName());
+                    System.out.println("Get ticker finished");
                 } catch (Exception e) {
                     System.out.println("Exception in getTicker(), skipping adding new coin" + coin.getMarketName());
                     continue;
@@ -93,6 +94,7 @@ public class Scraper {
                 BigDecimal lastPrice;
                 try {
                     lastPrice = restClient.getTicker(coin.getMarketName()).getResult().getLast();
+                    System.out.println("Get ticker finished");
                 } catch (Exception e) {
                     System.out.println("Exception in getTicker(), skipping updating coin" + coin.getMarketName());
                     continue;

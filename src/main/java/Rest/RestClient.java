@@ -27,6 +27,7 @@ public class RestClient {
         int maxTries = 3;
         while (true) {
             try {
+                System.out.println("While loop");;
                 return invocationBuilder.get(MarketTicker.class);
             } catch (ProcessingException e) {
                 System.out.println("a fucking anticipated exceptin------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
